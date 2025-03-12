@@ -12,9 +12,10 @@
  #include <stdlib.h>
  #include <stdio.h>
  #include <time.h>
+ #include <regex.h>
 
- /*** constants ***/
- const int D6 = 6;
+ /*** user-defined data type ***/
+ typedef struct {int sides;} RollType;
 
  /*** mechanics ***/
  int roll_die(int sides) {
@@ -22,11 +23,26 @@
  }
 
 /*** init ***/
-int main() {
+int main(int argc, char** argv) {
     srand(time(NULL));
-    int result;
-    result = roll_die(D6);
-    printf("d6: %d\n\n", result);
+    regex_t rollRegex;
+    regcomp(&rollRegex, "^[0,1,2,3,4,5,6,7,8,9]*$", REG_NOSUB);
+
+    for (int i = 1; i < argc; i++) {
+        if (regexec(&rollRegex, *(argv + i), 0, NULL, 0) != 0) {
+            printf("ERROR: Invalid command line argument passed into program.\n");
+            exit(-1);
+        }
+    }
+
+    for (int i = 1; i < argc; i++) {
+        int sides = atoi(*(argv + i));
+        int result;
+
+        result = roll_die(sides);
+        printf("d%d: %d\n\n", sides, result);
+    }
+
 
     return 0;
 }
