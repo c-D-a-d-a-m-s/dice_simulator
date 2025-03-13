@@ -20,6 +20,11 @@
 
 typedef enum {COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_TOTAL, ERROR_COLOR} Color;
 
+ /*** mechanics ***/
+ int roll_die(int sides) {
+    return rand() % sides + 1;
+ }
+
 /*** utilities ***/
 void set_text_color(Color color) {
     switch (color)
@@ -79,10 +84,17 @@ void help() {
     printf("Program accepts up to 20 dNUMBER arguments.\n");
 }
 
- /*** mechanics ***/
- int roll_die(int sides) {
-    return rand() % sides + 1;
- }
+void getting_started() {
+    /*Getting started text // displayed when user calls program with no inputs*/
+    printf("\n    GETTING STARTED\n");
+    printf("   =================\n");
+    printf("    \033[38;5;202mTry entering: \033[0m./roll d20 c2 d6 c4 d100\n");
+    printf("               \033[38;5;220mdie type__|   |  |__roll multiple die types at the same time\n");
+    printf("            \033[38;5;220mnumber of dice___|\n\n");
+
+    printf("    \033[0mFor more help, enter: ./roll -h\n");
+    printf("   =================================\n\n");
+}
 
 /*** init ***/
 int main(int argc, char** argv) {
@@ -91,6 +103,11 @@ int main(int argc, char** argv) {
     regex_t helpRegex;
     regcomp(&rollRegex, "^[c,d][0,1,2,3,4,5,6,7,8,9]\\{1,3\\}$", REG_NOSUB);
     regcomp(&helpRegex, "(^[-]h$)|(^[-][-]help$)", REG_NOSUB || REG_EXTENDED);
+
+    if (argc == 1) {
+        getting_started();
+        return 0;
+    }
 
     for (int i = 1; i < argc; i++) {
         if (regexec(&helpRegex, *(argv + i), 0, NULL, 0) == 0) {
