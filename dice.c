@@ -24,6 +24,21 @@ void die() {
     exit(-1);
 }
 
+void help() {
+    printf("\nUsage: ./roll dNUMBER [cNUMBER] ...\n");
+    printf("Simulate rolling dice in the command line.\n\n");
+    printf("  dNUMBER     die whose total number of sides is NUMBER;\n");
+    printf("              sides labelled 1 to NUMBER; 1 <= NUMBER <= 999\n");
+    printf("  cNUMBER     NUMBER is total number of dice rolls of preceding\n");
+    printf("              dice type;\n");
+    printf("              default is 1 roll when argument is not specified\n");
+    printf("  -h, --help  show this message\n\n");
+    printf("Examples:\n");
+    printf("  ./roll d20      output one d6 roll\n");
+    printf("  ./roll d6 c4 d20 c2      output 4 d6 rolls and 2 d20 rolls\n\n");
+    printf("Program accepts up to 20 dNUMBER arguments.\n");
+}
+
  /*** mechanics ***/
  int roll_die(int sides) {
     return rand() % sides + 1;
@@ -33,7 +48,16 @@ void die() {
 int main(int argc, char** argv) {
     srand(time(NULL));
     regex_t rollRegex;
+    regex_t helpRegex;
     regcomp(&rollRegex, "^[c,d][0,1,2,3,4,5,6,7,8,9]\\{1,3\\}$", REG_NOSUB);
+    regcomp(&helpRegex, "(^[-]h$)|(^[-][-]help$)", REG_NOSUB || REG_EXTENDED);
+
+    for (int i = 1; i < argc; i++) {
+        if (regexec(&helpRegex, *(argv + i), 0, NULL, 0) == 0) {
+            help();
+            return 0;
+        }
+    }
 
     /*Parse command line arguments*/
     const int USER_ROLLS_MAX = 20;
