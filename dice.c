@@ -25,11 +25,11 @@ void die() {
 }
 
 void help() {
-    printf("\nUsage: ./roll dNUMBER [cNUMBER] ...\n");
+    printf("\nUsage: ./roll d<NUMBER> [c<NUMBER>] ...\n");
     printf("Simulate rolling dice in the command line.\n\n");
-    printf("  dNUMBER     die whose total number of sides is NUMBER;\n");
+    printf("  d<NUMBER>   die whose total number of sides is NUMBER;\n");
     printf("              sides labelled 1 to NUMBER; 1 <= NUMBER <= 999\n");
-    printf("  cNUMBER     NUMBER is total number of dice rolls of preceding\n");
+    printf("  c<NUMBER>   NUMBER is total number of dice rolls of preceding\n");
     printf("              dice type;\n");
     printf("              default is 1 roll when argument is not specified\n");
     printf("  -h, --help  show this message\n\n");
