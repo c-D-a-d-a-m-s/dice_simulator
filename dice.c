@@ -18,9 +18,49 @@
  typedef struct {int sides;
                 int count;} RollType;
 
+typedef enum {COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_TOTAL, ERROR_COLOR} Color;
+
 /*** utilities ***/
+void set_text_color(Color color) {
+    switch (color)
+    {
+        case COLOR_1:
+        printf("\033[38;5;198m");
+        break;
+
+        case COLOR_2:
+        printf("\033[38;5;226m");
+        break;
+
+        case COLOR_3:
+        printf("\033[38;5;202m");
+        break;
+
+        case COLOR_4:
+        printf("\033[38;5;213m");
+        break;
+
+        case COLOR_5:
+        printf("\033[38;5;220m");
+        break;
+
+        case ERROR_COLOR:
+        printf("\033[38;5;196m");
+        break;
+    
+    default:
+        break;
+    }
+}
+
+void reset_text_color() {
+    printf("\033[0m");
+}
+
 void die() {
+    set_text_color(ERROR_COLOR);
     printf("ERROR: Invalid command line argument passed into program.\n");
+    reset_text_color();
     exit(-1);
 }
 
@@ -74,7 +114,9 @@ int main(int argc, char** argv) {
         if (**(argv + i) == 'd') {
             userRollsTail++;
             if (userRollsTail == USER_ROLLS_MAX) {
+                set_text_color(ERROR_COLOR);
                 printf("Maximum number of dice types exceeded.\n");
+                reset_text_color();
                 userRollsTail--;
                 break;
             }
@@ -90,9 +132,10 @@ int main(int argc, char** argv) {
     }
 
     int result;
-
+    int SEED_COLOR = roll_die(COLOR_TOTAL);
     /*roll dice and display results*/
     for (int i = 0; i <= userRollsTail; i++) {
+        set_text_color((SEED_COLOR + i) % COLOR_TOTAL);
         printf("d%d: ", userRolls[i].sides);
         for (int j = 0; j < userRolls[i].count; j++) {
             result = roll_die(userRolls[i].sides);
@@ -100,7 +143,7 @@ int main(int argc, char** argv) {
         }
         printf("\n");
     }
-
+    reset_text_color();
 
     return 0;
 }
