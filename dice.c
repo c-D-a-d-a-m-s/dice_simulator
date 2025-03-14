@@ -18,7 +18,7 @@
  typedef struct {int sides;
                 int count;} RollType;
 
-typedef enum {COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_TOTAL, ERROR_COLOR} Color;
+typedef enum {COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_TOTAL, ERROR_COLOR} Color; //text color in terminal emulator
 
  /*** mechanics ***/
  int roll_die(int sides) {
@@ -27,6 +27,7 @@ typedef enum {COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_TOTAL, ERROR_CO
 
 /*** utilities ***/
 void set_text_color(Color color) {
+    /*change text color*/
     switch (color)
     {
         case COLOR_1:
@@ -59,10 +60,12 @@ void set_text_color(Color color) {
 }
 
 void reset_text_color() {
+    /*reset text color to default*/
     printf("\033[0m");
 }
 
 void die() {
+    /*Exit progam if program encounters unexpected command line arguments*/
     set_text_color(ERROR_COLOR);
     printf("ERROR: Invalid command line argument passed into program.\n");
     reset_text_color();
@@ -70,6 +73,7 @@ void die() {
 }
 
 void help() {
+    /*Help text // displays program info*/
     printf("\nUsage: ./roll (d<NUMBER> [c<NUMBER>])...\n");
     printf("Simulate rolling dice in the command line.\n\n");
     printf("  d<NUMBER>   die whose total number of sides is NUMBER;\n");
@@ -85,7 +89,7 @@ void help() {
 }
 
 void getting_started() {
-    /*Getting started text // displayed when user calls program with no inputs*/
+    /*Getting started text // displayed when user calls program with no inputs*/    
     printf("\n    GETTING STARTED\n");
     printf("   =================\n");
     printf("    \033[38;5;202mTry entering: \033[0m./roll d20 c2 d6 c4 d100\n");
@@ -98,17 +102,30 @@ void getting_started() {
 
 /*** init ***/
 int main(int argc, char** argv) {
+
+    /** variables and constants **/
     srand(time(NULL));
     regex_t rollRegex;
     regex_t helpRegex;
+
+    const int USER_ROLLS_MAX = 20;
+    RollType userRolls[USER_ROLLS_MAX];
+    int userRollsTail = -1;
+
+    int result;
+    int SEED_COLOR = roll_die(COLOR_TOTAL);
+
+    /*Compile regular expressions*/
     regcomp(&rollRegex, "^[c,d][0,1,2,3,4,5,6,7,8,9]\\{1,3\\}$", REG_NOSUB);
     regcomp(&helpRegex, "(^[-]h$)|(^[-][-]help$)", REG_NOSUB || REG_EXTENDED);
 
+    /*Display GETTING STARTED text*/
     if (argc == 1) {
         getting_started();
         return 0;
     }
 
+    /*Display HELP text*/
     for (int i = 1; i < argc; i++) {
         if (regexec(&helpRegex, *(argv + i), 0, NULL, 0) == 0) {
             help();
@@ -117,10 +134,6 @@ int main(int argc, char** argv) {
     }
 
     /*Parse command line arguments*/
-    const int USER_ROLLS_MAX = 20;
-    RollType userRolls[USER_ROLLS_MAX];
-    int userRollsTail = -1;
-
     for (int i = 1; i < argc; i++) {
         if (regexec(&rollRegex, *(argv + i), 0, NULL, 0) != 0) {
             die();
@@ -148,8 +161,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    int result;
-    int SEED_COLOR = roll_die(COLOR_TOTAL);
+    
     /*roll dice and display results*/
     for (int i = 0; i <= userRollsTail; i++) {
         set_text_color((SEED_COLOR + i) % COLOR_TOTAL);
